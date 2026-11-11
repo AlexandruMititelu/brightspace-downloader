@@ -2,7 +2,7 @@ import { ORIGIN, sanitize, courseFolder, planContent } from './lib.js';
 
 const CONCURRENCY = 4; // be polite to the university server
 const $ = (id) => document.getElementById(id);
-const id = new URLSearchParams(location.search).get('id');
+const tabCourseId = new URLSearchParams(location.search).get('id');
 
 // --- default folder: a directory handle only survives in IndexedDB ---
 const db = new Promise((resolve, reject) => {
@@ -34,17 +34,28 @@ const api = async (path) => {
 async function endpoints() {
   const versions = await api('/d2l/api/versions/');
   const v = (code) => versions.find((x) => x.ProductCode === code).LatestVersion;
-  return { lp: `/d2l/api/lp/${v('lp')}`, le: `/d2l/api/le/${v('le')}/${id}` };
+  return { lp: `/d2l/api/lp/${v('lp')}`, le: `/d2l/api/le/${v('le')}` };
 }
 
-async function courseInfo(lp) {
-  try {
-    const c = await api(`${lp}/courses/${id}`);
-    return { name: c.Name, start: c.StartDate };
-  } catch {
-    const e = await api(`${lp}/enrollments/myenrollments/${id}`);
-    return { name: e.OrgUnit.Name, start: e.Access?.StartDate };
-  }
+// Every course the user is enrolled in, newest first. Org unit type 3 = course offering.
+async function listCourses(lp, le) {
+  const items = [];
+  let bookmark = '';
+  do {
+    const page = await api(`${lp}/enrollments/myenrollments/?orgUnitTypeId=3&bookmark=${bookmark}`);
+    items.push(...page.Items);
+    bookmark = page.PagingInfo?.HasMoreItems ? page.PagingInfo.Bookmark : '';
+  } while (bookmark);
+  return items
+    .filter((e) => e.Access?.CanAccess !== false)
+    .map((e) => ({
+      id: String(e.OrgUnit.Id),
+      name: e.OrgUnit.Name,
+      start: e.Access?.StartDate ?? '',
+      folder: courseFolder(e.OrgUnit.Name, e.Access?.StartDate),
+      le: `${le}/${e.OrgUnit.Id}`,
+    }))
+    .sort((a, b) => b.start.localeCompare(a.start) || a.name.localeCompare(b.name));
 }
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -142,14 +153,15 @@ async function run(root, where) {
 }
 
 // --- UI ---
-let course; // { name, folder, le }
+let courses = [];
+let course; // { id, name, start, folder, le }
 let base = await kv('readonly', (s) => s.get('dir'));
 let busy = false;
 
 function render() {
   $('base').textContent = base?.name ?? 'not set';
   $('go').disabled = $('other').disabled = busy || !course;
-  $('change').disabled = busy;
+  $('change').disabled = $('course').disabled = busy;
   $('hint').textContent = course ? `Default saves to ${base?.name ?? '<default folder>'}/${course.folder}` : '';
 }
 
@@ -191,18 +203,21 @@ $('other').addEventListener('click', action(async () => {
   await run(dir, dir.name);
 }));
 
-render();
-if (!id) {
-  $('course').textContent = 'Open a Brightspace course page, then click the extension icon.';
-} else {
-  try {
-    const { lp, le } = await endpoints();
-    const info = await courseInfo(lp);
-    course = { name: info.name, folder: courseFolder(info.name, info.start), le };
-    $('course').textContent = info.name;
-    document.title = `Download — ${info.name}`;
-  } catch (e) {
-    $('course').textContent = e.message;
-  }
+$('course').addEventListener('change', () => {
+  course = courses.find((c) => c.id === $('course').value);
   render();
+});
+
+render();
+try {
+  const { lp, le } = await endpoints();
+  courses = await listCourses(lp, le);
+  $('course').replaceChildren(...courses.map((c) => new Option(c.name, c.id)));
+  // Preselect the course of the tab the icon was clicked on, else the newest.
+  course = courses.find((c) => c.id === tabCourseId) ?? courses[0];
+  if (course) $('course').value = course.id;
+  else $('status').textContent = 'No courses found.';
+} catch (e) {
+  $('status').textContent = e.message;
 }
+render();
