@@ -46,6 +46,11 @@ course order.
 - Sorting into slides/exercises/exams is a keyword guess over module and file titles.
 - Not downloaded: discussions, quizzes, grades, your own submissions, externally hosted video.
 
+## Package for the Chrome Web Store
+
+`npm run zip` writes `dist/brightspace-downloader.zip` (extension files only).
+Privacy policy for the listing: `PRIVACY.md`.
+
 ## Test
 
 `node test.js`

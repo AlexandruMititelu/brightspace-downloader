@@ -2,5 +2,8 @@
   "name": "brightspace-downloader",
   "private": true,
   "type": "module",
-  "scripts": { "test": "node test.js" }
+  "scripts": {
+    "test": "node test.js",
+    "zip": "mkdir -p dist && rm -f dist/brightspace-downloader.zip && python3 -m zipfile -c dist/brightspace-downloader.zip manifest.json background.js lib.js page.html page.js icons/"
+  }
 }

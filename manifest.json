@@ -3,6 +3,7 @@
   "name": "Brightspace Downloader",
   "version": "0.2.0",
   "description": "Download a full TU Delft Brightspace course into a sorted folder.",
+  "icons": { "16": "icons/16.png", "48": "icons/48.png", "128": "icons/128.png" },
   "host_permissions": ["https://brightspace.tudelft.nl/*"],
   "background": { "service_worker": "background.js", "type": "module" },
   "action": { "default_title": "Download this course" }
