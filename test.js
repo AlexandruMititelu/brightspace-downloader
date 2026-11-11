@@ -1,10 +1,9 @@
 // node test.js
 import assert from 'node:assert/strict';
-import { sanitize, cleanPath, slug, courseIdFromUrl, courseFolder, extOf, categorize, planContent } from './lib.js';
+import { sanitize, slug, courseIdFromUrl, courseFolder, extOf, categorize, planContent } from './lib.js';
 
 assert.equal(sanitize(' a/b: c?. '), 'a_b_ c_');
 assert.equal(sanitize('...'), 'untitled');
-assert.deepEqual(cleanPath('../uni\\Q1 / algo/'), ['uni', 'Q1', 'algo']);
 assert.equal(slug('Algoritmen & Datastructuren (2026/27 Q1)'), 'algoritmen-datastructuren-2026-27-q1');
 
 assert.equal(courseIdFromUrl('https://brightspace.tudelft.nl/d2l/home/123456'), '123456');

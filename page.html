@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Brightspace Downloader</title>
+<style>
+  body { max-width: 560px; margin: 40px auto; padding: 0 16px; font: 15px/1.5 system-ui, sans-serif; color-scheme: light dark; }
+  h1 { font-size: 20px; }
+  button { padding: 6px 12px; font: inherit; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 12px 0; }
+  #status { white-space: pre-wrap; overflow-wrap: anywhere; }
+</style>
+<h1 id="course">…</h1>
+<div class="row">
+  <span>Default folder: <strong id="base">not set</strong></span>
+  <button id="change">Change…</button>
+</div>
+<div class="row">
+  <button id="go" disabled>Download to default folder</button>
+  <button id="other" disabled>Download to another folder…</button>
+</div>
+<p id="hint"></p>
+<p id="status" role="status"></p>
+<script type="module" src="page.js"></script>

@@ -12,11 +12,13 @@ Chrome extension that downloads a full TU Delft Brightspace course
 ## Use
 
 1. Log in to Brightspace and open any page of a course.
-2. Click the extension icon, then "Download course".
-   - Leave the folder field empty: files go to `Downloads/<default folder>/<year>_<course-name>`,
-     for example `Downloads/Brightspace/2026_machine-learning`.
-   - Type a folder: files go to `Downloads/<what you typed>`.
-3. The default folder is set once under Settings in the popup.
+2. Click the extension icon. A tab opens with the course name.
+3. Pick one:
+   - "Download to default folder": saves to `<default folder>/<year>_<course-name>`,
+     for example `Uni/2026_machine-learning`. The first time it asks you to choose the
+     default folder; "Change…" picks another one later.
+   - "Download to another folder…": choose or create any folder; files go straight into it.
+4. Keep the tab open until it says Done.
 
 The year is the course start year: start date from Brightspace, else a year in the
 course name, else the current year.
@@ -37,9 +39,10 @@ course order.
 
 ## Limits
 
-- Chrome only lets extensions save inside the Downloads folder, so both folder fields
-  are relative to it.
-- Turn off "Ask where to save each file before downloading" in Chrome, or every file prompts.
+- Chrome asks to confirm access to the default folder once per browser session, unless
+  you choose "Allow on every visit" in that prompt.
+- Chrome refuses some folders in the picker: the Downloads/Documents/Desktop folders
+  themselves and system folders. A subfolder of them works.
 - Sorting into slides/exercises/exams is a keyword guess over module and file titles.
 - Not downloaded: discussions, quizzes, grades, your own submissions, externally hosted video.
 

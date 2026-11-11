@@ -1,4 +1,4 @@
-// Pure helpers shared by background.js and popup.js. Checked by test.js.
+// Pure helpers shared by background.js and page.js. Checked by test.js.
 
 export const ORIGIN = 'https://brightspace.tudelft.nl';
 
@@ -12,14 +12,6 @@ export const sanitize = (s) =>
     .trim()
     .slice(0, 100)
     .replace(/^[. ]+|[. ]+$/g, '') || 'untitled';
-
-// User-typed folder -> safe segments, relative to Downloads. Drops "..", empty parts.
-export const cleanPath = (s) =>
-  String(s ?? '')
-    .split(/[\\/]+/)
-    .map((p) => p.trim())
-    .filter((p) => p && !/^\.+$/.test(p))
-    .map(sanitize);
 
 export const slug = (s) =>
   String(s ?? '')
