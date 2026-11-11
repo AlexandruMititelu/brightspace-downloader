@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Brightspace Downloader",
+  "version": "0.1.0",
+  "description": "Download a full TU Delft Brightspace course into a sorted folder.",
+  "permissions": ["downloads", "storage"],
+  "host_permissions": ["https://brightspace.tudelft.nl/*"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": { "default_popup": "popup.html", "default_title": "Download this course" }
+}
